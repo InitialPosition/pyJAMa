@@ -1,0 +1,2 @@
+Welcome to LDJAM+! To use this program, it needs your LDJAM login tokens. You can find them by following THIS GUIDE.
+The tokens will NEVER be sent anywhere except to the official LDJAM API.
