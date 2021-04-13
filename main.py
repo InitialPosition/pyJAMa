@@ -1,7 +1,7 @@
 import json
 from os.path import isfile
 
-from LDJAM_AI.LDJAM_API import get_event_themes, get_current_event_id
+from LDJAM_API.LDJAM_API import get_event_themes, get_current_event_id
 from util.CONSTANTS import CONFIG_FILE
 from util.Config import load_config, save_config
 from util.ConsoleFunctions import clear_console
