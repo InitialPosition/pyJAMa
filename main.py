@@ -7,7 +7,7 @@ from LDJAM_API.LDJAM_API import get_event_themes, get_current_event_id, get_user
 from LDJAM_API.Voting import start_general_voting, VotingExitReason, start_bulk_voting
 from util.CONSTANTS import CONFIG_FILE
 from util.Config import load_config, save_config, delete_config
-from util.ConsoleFunctions import clear_console, print_file
+from util.ConsoleFunctions import clear_console, print_file, print_version_info
 
 
 def main_menu():
@@ -20,6 +20,7 @@ def main_menu():
 
     # print logo
     print_file('files/logo.txt')
+    print_version_info()
 
     print(f'\n{len(themes)} themes loaded.\nUnvoted themes: {unvoted_theme_count}\n')
 
@@ -59,6 +60,7 @@ def cookie_setup(first_time: bool = True):
     clear_console()
 
     print_file('files/logo.txt')
+    print_version_info()
     print()
 
     if first_time:
@@ -76,6 +78,9 @@ def cookie_setup(first_time: bool = True):
         delete_config()
     else:
         save_config(cookie_cfduid, cookie_sids)
+
+    if first_time is False:
+        main_menu()
 
 
 # if a config exists, load it

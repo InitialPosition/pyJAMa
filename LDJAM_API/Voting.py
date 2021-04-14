@@ -70,7 +70,6 @@ def start_general_voting(themes: dict, voted_themes: dict):
 
 
 def start_bulk_voting(themes: dict, voted_themes: dict):
-
     # array for themes we voted on while in the function
     local_voted_themes = []
 

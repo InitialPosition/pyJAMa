@@ -26,7 +26,6 @@ def get_event_themes(event_id: int):
 
 
 def get_current_event_id():
-
     call_url = 'https://api.ldjam.com/vx/node2/what/1'
     request = get(call_url)
 
