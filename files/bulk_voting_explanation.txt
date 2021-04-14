@@ -1,0 +1,10 @@
+Starting bulk theme voting.
+
+Enter a keyword. The program will then look for themes containing that keyword. You then have the ability to vote YES/NO for all of them at once.
+
+To prevent abuse, you can't bulk flag themes.
+
+COMMANDS:
+Y: Vote YES
+N: Vote NO
+C: Back to main menu

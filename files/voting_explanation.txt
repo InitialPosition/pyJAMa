@@ -1,7 +1,7 @@
 Starting theme voting.
 
 COMMANDS:
-Y: Vote Yes
-N: Vote No
-F: Flag Theme
+Y: Vote YES
+N: Vote NO
+F: FLAG Theme
 C: Back to main menu

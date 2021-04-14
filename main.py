@@ -4,7 +4,7 @@ from os.path import isfile
 from termcolor import cprint
 
 from LDJAM_API.LDJAM_API import get_event_themes, get_current_event_id, get_user_votes
-from LDJAM_API.Voting import start_general_voting, VotingExitReason
+from LDJAM_API.Voting import start_general_voting, VotingExitReason, start_bulk_voting
 from util.CONSTANTS import CONFIG_FILE
 from util.Config import load_config, save_config, delete_config
 from util.ConsoleFunctions import clear_console, print_file
@@ -41,9 +41,11 @@ def main_menu():
         if voting_result == VotingExitReason.USER_ABORTED:
             main_menu()
 
-    if selection =='2':
-        print('TODO')
-        exit(0)
+    if selection == '2':
+        voting_result = start_bulk_voting(themes, user_votes)
+
+        if voting_result == VotingExitReason.USER_ABORTED:
+            main_menu()
 
     if selection == '3':
         cookie_setup(False)
