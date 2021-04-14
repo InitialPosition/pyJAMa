@@ -26,13 +26,12 @@ def main_menu():
 
     print('[1] Start theme voting')
     print('[2] Start bulk theme voting')
-    print('[3] Cookie setup')
-    print('[4] Exit')
+    print('[3] Exit')
     print()
 
     selection = input('Selection > ')
 
-    while selection not in ['1', '2', '3', '4']:
+    while selection not in ['1', '2', '3']:
         print('Invalid selection. Try again.')
         selection = input('Selection > ')
 
@@ -49,26 +48,18 @@ def main_menu():
             main_menu()
 
     if selection == '3':
-        cookie_setup(False)
-
-    if selection == '4':
         print('Goodbye. Keep jamming!')
         exit(0)
 
 
-def cookie_setup(first_time: bool = True):
+def cookie_setup():
     clear_console()
 
     print_file('files/logo.txt')
     print_version_info()
     print()
 
-    if first_time:
-        print_file('files/cookie_explanation.txt')
-
-    else:
-        print_file('files/cookie_reset.txt')
-
+    print_file('files/cookie_explanation.txt')
     print()
 
     cookie_cfduid = input('__cfduid > ')
@@ -78,9 +69,6 @@ def cookie_setup(first_time: bool = True):
         delete_config()
     else:
         save_config(cookie_cfduid, cookie_sids)
-
-    if first_time is False:
-        main_menu()
 
 
 # if a config exists, load it

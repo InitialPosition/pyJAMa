@@ -7,6 +7,10 @@ from util.CONSTANTS import CONFIG_FILE
 
 
 def load_config():
+    if isfile(CONFIG_FILE) is False:
+        print('Tried to load config but none present! Aborting...')
+        exit(0)
+
     with open(CONFIG_FILE, 'r') as conf_file:
         data = yaml_load(conf_file, Loader=FullLoader)
 

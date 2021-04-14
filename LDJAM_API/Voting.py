@@ -112,36 +112,51 @@ def start_bulk_voting(themes: dict, voted_themes: dict):
 
         print(f'Found {len(keyword_themes)} themes.')
 
+        theme_index = 0
+
         for theme in keyword_themes:
-            print(themes.get(theme))
+            theme_index += 1
+            print(f'[{theme_index}] {themes.get(theme)}')
 
-        user_input = ''
+        user_input = input('What do you want to do? [Y/N/C] > ')
 
-        while user_input.upper() not in ['Y', 'N', 'C']:
-            user_input = input('What do you want to do? [Y/N/C] > ')
+        if (user_input.upper().startswith('Y') or user_input.upper().startswith('N') or user_input.upper().startswith('C')) is False:
+            continue
 
-            if user_input.upper() == 'C':
-                return VotingExitReason.USER_ABORTED
+        if user_input.upper() == 'C':
+            return VotingExitReason.USER_ABORTED
 
-            elif user_input.upper() == 'Y':
+        elif user_input.upper().startswith('Y'):
 
-                for theme in keyword_themes:
+            input_split = user_input.upper().split(' ')
 
+            theme_index = 0
+
+            for theme in keyword_themes:
+
+                theme_index += 1
+
+                if (len(input_split) > 1 and str(theme_index) in input_split[1:]) or len(input_split) == 1:
                     print(f'Voting YES on theme "{themes.get(theme)}"')
-
                     vote_result = vote_theme(theme, 'yes')
 
                     if vote_result != 0:
                         # there was an error posting vote
-
                         return VotingExitReason.GENERAL_ERROR
 
                     local_voted_themes.append(theme)
                     sleep(1)
 
-            elif user_input.upper() == 'N':
-                for theme in keyword_themes:
+        elif user_input.upper().startswith('N'):
+            input_split = user_input.upper().split(' ')
 
+            theme_index = 0
+
+            for theme in keyword_themes:
+
+                theme_index += 1
+
+                if (len(input_split) > 1 and str(theme_index) in input_split[1:]) or len(input_split) == 1:
                     print(f'Voting NO on theme "{themes.get(theme)}"')
                     vote_result = vote_theme(theme, 'no')
 
