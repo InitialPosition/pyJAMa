@@ -14,8 +14,8 @@ LDJAM+ is a script that makes LDJAM theme voting less painful. It supports bulk 
 - Bulk voting
 
 ## Installation
-1. Go to (RELEASES)[https://github.com/InitialPosition/LDJAMPlus/releases] and download the latest release version.
-2. Make sure Python 3 is installed. You can check by typing `python3 --version` into your terminal. If a string containing a version number is displayed, continue. Otherwise, install Python 3 from the (OFFICIAL WEBSITE)[https://www.python.org/downloads/].
+1. Go to [RELEASES](https://github.com/InitialPosition/LDJAMPlus/releases) and download the latest release version.
+2. Make sure Python 3 is installed. You can check by typing `python3 --version` into your terminal. If a string containing a version number is displayed, continue. Otherwise, install Python 3 from the [OFFICIAL WEBSITE](https://www.python.org/downloads).
 3. Create a virtual python environment by typing `python3 -m venv <target folder>` into your terminal and switch to it using `source <target folder>/bin/activate`. If creating the environment fails, you may need to install venv3 by typing `sudo apt install python3-venv` first.
 4. Install the required packages by running `python3 -m pip install -r requirements.txt` while the virtual environment is active.
 5. To launch the program, use the command `python3 main.py`.
