@@ -1,4 +1,4 @@
-# LDJAM+
+# pyJAMa
 _the low orbit floating island cannon_
 
 ## Content
@@ -7,7 +7,7 @@ _the low orbit floating island cannon_
 3. Config
 
 ## Introduction
-LDJAM+ is a script that makes LDJAM theme voting less painful. It supports bulk voting themes that fit a given keyphrase and can be used to vote on themes in general.
+pyJAMa is a script that makes LDJAM theme voting less painful. It supports bulk voting themes that fit a given keyphrase and can be used to vote on themes in general.
 
 ## Functions
 - Command line based voting
