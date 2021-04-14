@@ -1,19 +1,28 @@
 import json
 from os.path import isfile
 
-from LDJAM_API.LDJAM_API import get_event_themes, get_current_event_id
+from termcolor import cprint
+
+from LDJAM_API.LDJAM_API import get_event_themes, get_current_event_id, get_user_votes
+from LDJAM_API.Voting import start_general_voting, VotingExitReason
 from util.CONSTANTS import CONFIG_FILE
-from util.Config import load_config, save_config
-from util.ConsoleFunctions import clear_console
-
-
-def print_file(file):
-    with open(file, 'r') as f:
-        for line in f.read().splitlines():
-            print(line)
+from util.Config import load_config, save_config, delete_config
+from util.ConsoleFunctions import clear_console, print_file
 
 
 def main_menu():
+    print('Fetching user votes...')
+    user_votes = get_user_votes(event_id)
+
+    unvoted_theme_count = len(themes) - len(user_votes)
+
+    clear_console()
+
+    # print logo
+    print_file('files/logo.txt')
+
+    print(f'\n{len(themes)} themes loaded.\nUnvoted themes: {unvoted_theme_count}\n')
+
     print('[1] Start theme voting')
     print('[2] Start bulk theme voting')
     print('[3] Cookie setup')
@@ -22,20 +31,49 @@ def main_menu():
 
     selection = input('Selection > ')
 
+    while selection not in ['1', '2', '3', '4']:
+        print('Invalid selection. Try again.')
+        selection = input('Selection > ')
 
-def cookie_setup():
+    if selection == '1':
+        voting_result = start_general_voting(themes, user_votes)
+
+        if voting_result == VotingExitReason.USER_ABORTED:
+            main_menu()
+
+    if selection =='2':
+        print('TODO')
+        exit(0)
+
+    if selection == '3':
+        cookie_setup(False)
+
+    if selection == '4':
+        print('Goodbye. Keep jamming!')
+        exit(0)
+
+
+def cookie_setup(first_time: bool = True):
     clear_console()
 
     print_file('files/logo.txt')
     print()
 
-    print_file('files/cookie_explanation.txt')
+    if first_time:
+        print_file('files/cookie_explanation.txt')
+
+    else:
+        print_file('files/cookie_reset.txt')
+
     print()
 
     cookie_cfduid = input('__cfduid > ')
     cookie_sids = input('SIDS > ')
 
-    save_config(cookie_cfduid, cookie_sids)
+    if cookie_cfduid == '' and cookie_sids == '':
+        delete_config()
+    else:
+        save_config(cookie_cfduid, cookie_sids)
 
 
 # if a config exists, load it
@@ -49,16 +87,20 @@ event_id = get_current_event_id()
 
 print('Fetching themes...')
 request = get_event_themes(event_id)
+themes = None
+jsonified_themes = json.loads(request.text)
 
-jsonified = json.loads(request.text)
 # print(jsonified)
-themes = jsonified["ideas"]
+if jsonified_themes['status'] == 200:
+    themes = jsonified_themes["ideas"]
+else:
+    clear_console()
 
-clear_console()
+    cprint('There was a problem fetching themes. This indicates there might be a problem with your tokens.', 'red')
+    cprint('The program will now terminate. It will ask you to re-enter your tokens on next startup.', 'red')
 
-# print logo
-print_file('files/logo.txt')
+    delete_config()
 
-print(f'\n{len(themes)} themes loaded.\n')
+    exit(0)
 
 main_menu()

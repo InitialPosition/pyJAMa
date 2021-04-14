@@ -1,0 +1,7 @@
+Starting theme voting.
+
+COMMANDS:
+Y: Vote Yes
+N: Vote No
+F: Flag Theme
+C: Back to main menu

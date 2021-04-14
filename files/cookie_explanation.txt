@@ -1,2 +1,4 @@
-Welcome to LDJAM+! To use this program, it needs your LDJAM login tokens. You can find them by following THIS GUIDE.
+Welcome to LDJAM+! To use this program, it needs your LDJAM login tokens to vote on behalf of your LDJAM account.
 The tokens will NEVER be sent anywhere except to the official LDJAM API.
+
+If you don't know how to find your tokens, click here: TODO TUTORIAL LINK
