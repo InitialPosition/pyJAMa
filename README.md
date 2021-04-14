@@ -19,7 +19,7 @@ LDJAM+ is a script that makes LDJAM theme voting less painful. It supports bulk 
 3. Create a virtual python environment by typing `python3 -m venv <target folder>` into your terminal and switch to it using `source <target folder>/bin/activate`. If creating the environment fails, you may need to install venv3 by typing `sudo apt install python3-venv` first.
 4. Install the required packages by running `python3 -m pip install -r requirements.txt` while the virtual environment is active.
 5. To launch the program, use the command `python3 main.py`.
-6. Enter your cookie data when the program asks you to. The cookies will be saved locally and are NEVER sent anywhere except to the official LDJAM website.
+6. Enter your cookie data when the program asks you to. **The cookies will be saved locally and are NEVER sent anywhere except to the official LDJAM website.**
 
 ### Cookie Data
 The program needs your session cookies from ldjam.com to communicate with the website API and to vote on themes. Your cookies can be found like this:
