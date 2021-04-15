@@ -25,7 +25,7 @@ pyJAMa is a script that makes LDJAM theme voting less painful. It supports bulk 
 The program needs your session cookies from ldjam.com to communicate with the website API and to vote on themes. Your cookies can be found like this:
 
 - FIREFOX: go to ldjam.com. Make sure you are logged in. Press F12 to open the developer console and switch to the "Storage" tab. Select the "Cookie" entry from the list on the left. Your cookies should be displayed here.
-- CHROME: go to ldjam.com. Make sure you are logged in. Open the menu in the top right and go to Settings > Privacy and Security > Cookies and other site data > See all cookies and site data. Search for ldjam in the top right. You should now see your cookies.
+- CHROME: go to ldjam.com, making sure you are logged in. Click on the padlock to the left of the URL, then click on "Cookies". You should now see your cookies under "ldjam.com".
 - OPERA: go to ldjam.com. Make sure you are logged in. Go to Settings > Privacy & security and click the ldjam cookies to see the content.
 
 ## Roadmap
