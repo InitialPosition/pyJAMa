@@ -6,17 +6,20 @@ from util.Config import load_config
 
 
 def get_cookie_header():
+    # load data from local config
     cookie_data = load_config()
 
     cookie1 = cookie_data.get('__cfduid')
     cookie2 = cookie_data.get('SIDS')
 
+    # build header in correct format
     header = {'Cookie': f'__cfduid={cookie1}; SIDS={cookie2}'}
 
     return header
 
 
 def get_event_themes(event_id: int):
+    # call ldjam API to get all running events themes
     header = get_cookie_header()
     call_url = f'https://api.ldjam.com/vx/theme/idea/vote/get/{event_id}'
 
@@ -26,11 +29,13 @@ def get_event_themes(event_id: int):
 
 
 def get_current_event_id():
+    # call ldjam API to get running events ID (this call doesnt need auth headers)
     call_url = 'https://api.ldjam.com/vx/node2/what/1'
     request = get(call_url)
 
     request_json = json.loads(request.text)
 
+    # if we got an answer, extract event ID and return, otherwise abort
     if request_json['status'] == 200:
         event_id = request_json.get('featured').get('id')
 
@@ -42,6 +47,7 @@ def get_current_event_id():
 
 
 def get_user_votes(event_id: int):
+    # call ldjam API to get all themes the user already voted on
     header = get_cookie_header()
     call_url = f'https://api.ldjam.com/vx/theme/idea/vote/getmy/{event_id}'
 
@@ -49,6 +55,7 @@ def get_user_votes(event_id: int):
 
     request_json = json.loads(request.text)
 
+    # if we got an answer, extract voted themes and return, otherwise abort
     if request_json['status'] == 200:
         user_votes = request_json.get('votes')
 
@@ -59,16 +66,14 @@ def get_user_votes(event_id: int):
 
 
 def vote_theme(theme_id: int, voting: str):
+    # call ldjam API to vote on given theme ID with the given voting string
     header = get_cookie_header()
     request = get(f'https://api.ldjam.com/vx/theme/idea/vote/{voting}/{theme_id}', headers=header)
 
     request_json = json.loads(request.text)
 
+    # return whether vote was successful
     if request_json['status'] == 200:
         return 0
 
     return -1
-
-
-def flag_theme(theme_id: int):
-    print('TODO vote flag')

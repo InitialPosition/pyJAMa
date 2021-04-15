@@ -134,4 +134,6 @@ dmypy.json
 
 # Config files
 config.yml
+
+# packaged releases
 *.zip
