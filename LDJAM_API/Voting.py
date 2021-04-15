@@ -12,75 +12,153 @@ class VotingExitReason(Enum):
 
 
 def start_general_voting(themes: dict, voted_themes: dict):
-    clear_console()
+    # array for themes we voted on while in the function
+    local_voted_themes = []
 
-    # get the number of themes user still has to vote on
-    theme_count = len(themes) - len(voted_themes)
+    # init array for keyword matching themes
+    display_themes = []
 
-    # current index to show voting progress
-    current_theme_count = 1
+    # how many unvoted themes are left
+    unvoted_themes = len(themes) - (len(voted_themes) + len(local_voted_themes))
 
-    # loop through all themes
-    for theme in themes:
+    # immediately return if no themes are left
+    if unvoted_themes == 0:
+        return VotingExitReason.NO_MORE_THEMES
 
+    while 1:
         # make voting pretty
         clear_console()
         print_file('files/logo.txt')
         print_file('files/voting_explanation.txt')
         print()
 
-        # skip themes user already voted on
-        if theme in voted_themes:
+        display_themes.clear()
+
+        # loop through all themes
+        for theme in themes:
+
+            # skip already voted themes
+            if theme in voted_themes:
+                continue
+            if theme in local_voted_themes:
+                continue
+
+            if len(display_themes) < min(10, unvoted_themes):
+                # append theme to display themes
+                display_themes.append(theme)
+
+        # assign indices to found themes to allow select voting
+        theme_index = 0
+
+        for theme in display_themes:
+            theme_index += 1
+            print(f'[{theme_index}] {themes.get(theme)}')
+        print()
+
+        # get user input
+        user_input = input('What do you want to do? [Y/N/F/C] > ')
+
+        # make sure input is valid
+        if (user_input.upper().startswith('Y') or user_input.upper().startswith('N') or user_input.upper().startswith(
+                'C') or user_input.upper().startswith('F')) is False:
             continue
 
-        # get the actual theme from the theme ID
-        theme_name = themes.get(theme)
+        # cancel if user typed c
+        if user_input.upper() == 'C':
+            return VotingExitReason.USER_ABORTED
 
-        # (re) initialize user input
-        user_input = ''
+        # we are voting yes
+        elif user_input.upper().startswith('Y'):
 
-        # make sure user input is valid after showing theme
-        while user_input.upper() not in ['Y', 'N', 'F', 'C']:
-            user_input = input(
-                f'[{current_theme_count} / {theme_count}] Would this be a good theme: "{theme_name}"? [Y/N/F/C] > ')
+            input_split = user_input.upper().split(' ')
 
-            # user requested cancel
-            if user_input.upper() == 'C':
-                return VotingExitReason.USER_ABORTED
+            theme_index = 0
 
-            # user requested yes vote
-            elif user_input.upper() == 'Y':
-                vote_result = vote_theme(theme, 'yes')
+            for theme in display_themes:
 
-                if vote_result != 0:
-                    # there was an error posting vote
-                    return VotingExitReason.GENERAL_ERROR
+                theme_index += 1
 
-            # user requested no vote
-            elif user_input.upper() == 'N':
-                vote_result = vote_theme(theme, 'no')
+                # if no numbers provided, yes vote all themes. otherwise, vote yes if index is in input list.
+                if (len(input_split) > 1 and str(theme_index) in input_split[1:]) or len(input_split) == 1:
+                    print(f'Voting YES on theme "{themes.get(theme)}"')
+                    vote_result = vote_theme(theme, 'yes')
 
-                if vote_result != 0:
-                    # there was an error posting vote
-                    return VotingExitReason.GENERAL_ERROR
+                    if vote_result != 0:
+                        # there was an error posting vote
+                        return VotingExitReason.GENERAL_ERROR
 
-            # user requested flag vote
-            elif user_input.upper() == 'F':
-                vote_result = vote_theme(theme, 'flag')
+                    # add theme to local voted array so it gets removed on successive searches
+                    local_voted_themes.append(theme)
 
-                if vote_result != 0:
-                    # there was an error posting vote
-                    return VotingExitReason.GENERAL_ERROR
+                    # update unvoted counter
+                    unvoted_themes -= 1
 
-            # if no valid request was found at this point, it was invalid
-            else:
-                print('Invalid input. Please try again.')
+                    # sleep for 1 second to give the API some breathing room
+                    sleep(1)
 
-        # increase theme counter
-        current_theme_count += 1
+                    if unvoted_themes == 0:
+                        return VotingExitReason.NO_MORE_THEMES
 
-    # out of themes, return with proper status code
-    return VotingExitReason.NO_MORE_THEMES
+        # same as yes but actually no
+        elif user_input.upper().startswith('N'):
+            input_split = user_input.upper().split(' ')
+
+            theme_index = 0
+
+            for theme in display_themes:
+
+                theme_index += 1
+
+                if (len(input_split) > 1 and str(theme_index) in input_split[1:]) or len(input_split) == 1:
+                    print(f'Voting NO on theme "{themes.get(theme)}"')
+                    vote_result = vote_theme(theme, 'no')
+
+                    if vote_result != 0:
+                        # there was an error posting vote
+                        return VotingExitReason.GENERAL_ERROR
+
+                    local_voted_themes.append(theme)
+
+                    # update unvoted counter
+                    unvoted_themes -= 1
+
+                    sleep(1)
+
+                    if unvoted_themes == 0:
+                        return VotingExitReason.NO_MORE_THEMES
+
+        elif user_input.upper().startswith('F'):
+            # flag a theme. this only works if an index was given.
+            input_split = user_input.upper().split(' ')
+
+            # to be precise, if EXACTLY ONE index was given.
+            if len(input_split) != 2:
+                continue
+
+            theme_index = 0
+
+            for theme in display_themes:
+                # find the theme to flag
+                theme_index += 1
+
+                if str(theme_index) in input_split[1:]:
+
+                    print(f'FLAGGING theme "{themes.get(theme)}"')
+                    vote_result = vote_theme(theme, 'flag')
+
+                    if vote_result != 0:
+                        # there was an error posting vote
+                        return VotingExitReason.GENERAL_ERROR
+
+                    local_voted_themes.append(theme)
+
+                    # update unvoted counter
+                    unvoted_themes -= 1
+
+                    sleep(1)
+
+                    if unvoted_themes == 0:
+                        return VotingExitReason.NO_MORE_THEMES
 
 
 def start_bulk_voting(themes: dict, voted_themes: dict):
@@ -90,6 +168,10 @@ def start_bulk_voting(themes: dict, voted_themes: dict):
     # init array for keyword matching themes
     keyword_themes = []
 
+    # immediately return if no themes are left
+    if len(themes) - len(voted_themes) == 0:
+        return VotingExitReason.NO_MORE_THEMES
+
     while 1:
         # make voting pretty
         clear_console()
@@ -97,15 +179,19 @@ def start_bulk_voting(themes: dict, voted_themes: dict):
         print_file('files/bulk_voting_explanation.txt')
         print()
 
+        # set keyword to anything invalid
+        keyword = 'a'
+
         # keyword input
-        keyword = input('Keyword (Enter \'C\' to cancel) > ')
+        while len(keyword.replace(' ', '')) < 3:
+            keyword = input('Keyword (Enter \'C\' to cancel) > ')
 
-        # abort if user entered c or nothing
-        if keyword == '':
-            return VotingExitReason.USER_ABORTED
+            # abort if user entered c or nothing
+            if keyword == '':
+                return VotingExitReason.USER_ABORTED
 
-        if keyword.upper() == 'C':
-            return VotingExitReason.USER_ABORTED
+            elif keyword.upper() == 'C':
+                return VotingExitReason.USER_ABORTED
 
         print(f'Searching for themes containing "{keyword}"...')
 
@@ -148,7 +234,7 @@ def start_bulk_voting(themes: dict, voted_themes: dict):
 
         # make sure input is valid
         if (user_input.upper().startswith('Y') or user_input.upper().startswith('N') or user_input.upper().startswith(
-                'C')) is False:
+                'C') or user_input.upper().startswith('F')) is False:
             continue
 
         # cancel if user typed c
@@ -181,6 +267,9 @@ def start_bulk_voting(themes: dict, voted_themes: dict):
                     # sleep for 1 second to give the API some breathing room
                     sleep(1)
 
+                    if len(themes) - (len(local_voted_themes) + len(voted_themes)) == 0:
+                        return VotingExitReason.NO_MORE_THEMES
+
         # same as yes but actually no
         elif user_input.upper().startswith('N'):
             input_split = user_input.upper().split(' ')
@@ -201,3 +290,36 @@ def start_bulk_voting(themes: dict, voted_themes: dict):
 
                     local_voted_themes.append(theme)
                     sleep(1)
+
+                    if len(themes) - (len(local_voted_themes) + len(voted_themes)) == 0:
+                        return VotingExitReason.NO_MORE_THEMES
+
+        elif user_input.upper().startswith('F'):
+            # flag a theme. this only works if an index was given.
+            input_split = user_input.upper().split(' ')
+
+            # to be precise, if EXACTLY ONE index was given.
+            if len(input_split) != 2:
+                continue
+
+            theme_index = 0
+
+            for theme in keyword_themes:
+                # find the theme to flag
+                theme_index += 1
+
+                if str(theme_index) in input_split[1:]:
+
+                    print(f'FLAGGING theme "{themes.get(theme)}"')
+                    vote_result = vote_theme(theme, 'flag')
+
+                    if vote_result != 0:
+                        # there was an error posting vote
+                        return VotingExitReason.GENERAL_ERROR
+
+                    local_voted_themes.append(theme)
+
+                    sleep(1)
+
+                    if len(themes) - (len(local_voted_themes) + len(voted_themes)) == 0:
+                        return VotingExitReason.NO_MORE_THEMES

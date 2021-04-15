@@ -57,16 +57,16 @@ def main_menu():
     if selection == '1':
         voting_result = start_general_voting(themes, user_votes)
 
-        # reopen main menu if user typed c
-        if voting_result == VotingExitReason.USER_ABORTED:
+        # reopen main menu if user typed c or no themes are left
+        if voting_result == VotingExitReason.USER_ABORTED or voting_result == VotingExitReason.NO_MORE_THEMES:
             main_menu()
 
     # start bulk voting mode
     if selection == '2':
         voting_result = start_bulk_voting(themes, user_votes)
 
-        # reopen main menu if user typed c
-        if voting_result == VotingExitReason.USER_ABORTED:
+        # reopen main menu if user typed c or no themes are left
+        if voting_result == VotingExitReason.USER_ABORTED or voting_result == VotingExitReason.NO_MORE_THEMES:
             main_menu()
 
     # exit program
@@ -135,6 +135,11 @@ else:
 
     cprint('There was a problem fetching themes. This indicates there might be a problem with your tokens.', 'red')
     cprint('The program will now terminate. It will ask you to re-enter your tokens on next startup.', 'red')
+
+    print()
+    print('DEBUG INFO:')
+    print(jsonified_themes)
+    print()
 
     delete_config()
 
