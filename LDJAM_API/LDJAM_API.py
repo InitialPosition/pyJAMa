@@ -1,6 +1,8 @@
 import json
 
 from requests import get
+from requests.exceptions import ConnectionError as RequestConnectionError
+from urllib3.exceptions import NewConnectionError
 
 from util.Config import load_config
 
@@ -68,7 +70,14 @@ def get_user_votes(event_id: int):
 def vote_theme(theme_id: int, voting: str):
     # call ldjam API to vote on given theme ID with the given voting string
     header = get_cookie_header()
-    request = get(f'https://api.ldjam.com/vx/theme/idea/vote/{voting}/{theme_id}', headers=header)
+
+    try:
+        request = get(f'https://api.ldjam.com/vx/theme/idea/vote/{voting}/{theme_id}', headers=header)
+
+    except RequestConnectionError:
+        return -1
+    except NewConnectionError:
+        return -1
 
     request_json = json.loads(request.text)
 

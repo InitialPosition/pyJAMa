@@ -61,6 +61,19 @@ def main_menu():
         if voting_result == VotingExitReason.USER_ABORTED or voting_result == VotingExitReason.NO_MORE_THEMES:
             main_menu()
 
+        # handle error
+        if voting_result == VotingExitReason.GENERAL_ERROR:
+            # voting failed for some reason. abort and tell the user
+            clear_console()
+
+            cprint('An error occurred during the voting process. This probably means the API is overloaded or you lost '
+                   'internet connection.',
+                   'red')
+            cprint('The program will now terminate. Check your internet connection and try again. If voting still fails'
+                   ', wait a few minutes and try again.', 'red')
+
+            exit(0)
+
     # start bulk voting mode
     if selection == '2':
         voting_result = start_bulk_voting(themes, user_votes)
@@ -68,6 +81,21 @@ def main_menu():
         # reopen main menu if user typed c or no themes are left
         if voting_result == VotingExitReason.USER_ABORTED or voting_result == VotingExitReason.NO_MORE_THEMES:
             main_menu()
+
+        # handle error
+        if voting_result == VotingExitReason.GENERAL_ERROR:
+            # voting failed for some reason. abort and tell the user
+            clear_console()
+
+            cprint(
+                'An error occurred during the voting process. This probably means the API is overloaded or you lost '
+                'internet connection.',
+                'red')
+            cprint(
+                'The program will now terminate. Check your internet connection and try again. If voting still fails'
+                ', wait a few minutes and try again.', 'red')
+
+            exit(0)
 
     # exit program
     if selection == '3':
