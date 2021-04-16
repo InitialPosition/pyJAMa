@@ -32,6 +32,13 @@ def start_general_voting(themes: dict, voted_themes: dict):
         print_file('files/voting_explanation.txt')
         print()
 
+        # show how many votes are left
+        print(f'UNVOTED THEMES LEFT: {unvoted_themes}\n')
+
+        # show controls
+        print_file('files/voting_commands.txt')
+        print()
+
         display_themes.clear()
 
         # loop through all themes
@@ -177,6 +184,13 @@ def start_bulk_voting(themes: dict, voted_themes: dict):
         clear_console()
         print_file('files/logo.txt')
         print_file('files/bulk_voting_explanation.txt')
+        print()
+
+        # show how many votes are left
+        print(f'UNVOTED THEMES LEFT: {len(themes) - (len(local_voted_themes) + len(voted_themes))}\n')
+
+        # show controls
+        print_file('files/voting_commands.txt')
         print()
 
         # set keyword to anything invalid

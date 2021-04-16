@@ -1,0 +1,5 @@
+COMMANDS:
+Y: Vote YES
+N: Vote NO
+F: FLAG theme
+C: Back to main menu
