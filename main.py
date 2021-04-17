@@ -1,6 +1,5 @@
 import json
 from os.path import isfile
-from webbrowser import open as web_open
 
 from termcolor import cprint
 
@@ -9,7 +8,7 @@ from LDJAM_API.Voting import start_general_voting, VotingExitReason, start_bulk_
 from util.CONSTANTS import CONFIG_FILE
 from util.Config import load_config, save_config, delete_config
 from util.ConsoleFunctions import clear_console, print_file, print_version_info
-from util.Updater import check_for_update, UpdateCheckResult
+from util.Updater import check_for_update, UpdateCheckResult, download_update
 
 
 def main_menu():
@@ -32,7 +31,9 @@ def main_menu():
 
     # if an update is available, say so and enable option to open web browser
     if update_check_result == UpdateCheckResult.UPDATE_AVAILABLE:
-        print('UPDATE AVAILABLE!\n')
+        cprint(f'NEW VERSION AVAILABLE: {new_update_version}\n'
+               f'Changelog: https://github.com/InitialPosition/pyJAMa/releases/tag/v{new_update_version}\n', 'white',
+               'on_green')
         valid_selections.append('4')
 
     # print default main menu
@@ -41,7 +42,7 @@ def main_menu():
     print('[3] Exit')
 
     if update_check_result == UpdateCheckResult.UPDATE_AVAILABLE:
-        print('[4] Open update page')
+        print('[4] Download Update')
 
     print()
 
@@ -104,7 +105,7 @@ def main_menu():
 
     # open update page in new tab (this is only accessible if an update is actually available)
     if selection == '4':
-        web_open('https://github.com/InitialPosition/pyJAMa/releases', new=2)
+        download_update(new_update_version)
         exit(0)
 
 
@@ -135,7 +136,7 @@ def cookie_setup():
 # --- PROGRAM ENTRY POINT ---
 # check for updates and save test result
 print('Checking for updates...')
-update_check_result = check_for_update()
+update_check_result, new_update_version = check_for_update()
 
 # if a config exists, load it
 if isfile(CONFIG_FILE):

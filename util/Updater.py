@@ -1,4 +1,6 @@
 from enum import Enum
+from os import remove
+from zipfile import ZipFile
 
 from requests import get
 
@@ -33,17 +35,43 @@ def check_for_update():
         return UpdateCheckResult.CHECK_ERROR
 
     # extract newest version from version line
-    online_version = version_line.split('\'')[1].split('.')
+    online_version = version_line.split('\'')[1]
+    online_version_split = online_version.split('.')
 
     # make version numbers
     local_final_version = ''
     online_final_version = ''
     for i in range(3):
         local_final_version += local_version[i]
-        online_final_version += online_version[i]
+        online_final_version += online_version_split[i]
 
     # compare versions and return proper status
     if int(online_final_version) > int(local_final_version):
-        return UpdateCheckResult.UPDATE_AVAILABLE
+        return UpdateCheckResult.UPDATE_AVAILABLE, online_version
     else:
-        return UpdateCheckResult.NO_UPDATE_AVAILABLE
+        return UpdateCheckResult.NO_UPDATE_AVAILABLE, None
+
+
+def download_update(new_version: str):
+    update_zip_name = 'update.zip'
+
+    # download update zip
+    print(f'Downloading update...')
+    download_url = f'https://github.com/InitialPosition/pyJAMa/releases/download/v{new_version}/pyJAMa.zip'
+    download = get(download_url, stream=True)
+
+    # save chunks to disk
+    with open(update_zip_name, 'wb') as update_zip:
+        for chunk in download.iter_content(chunk_size=1024):
+            if chunk:
+                update_zip.write(chunk)
+
+    print('Unzipping...')
+    # extract data and overwrite local files
+    with ZipFile(update_zip_name) as final_zip:
+        final_zip.extractall()
+
+    print('Cleaning up...')
+    remove(update_zip_name)
+
+    print('Update completed! Please restart the program to apply the changes.')
