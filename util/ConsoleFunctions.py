@@ -8,7 +8,7 @@ def clear_console():
 
 
 def print_file(file):
-    with open(file, 'r') as f:
+    with open(file, 'r', encoding='utf8') as f:
         for line in f.read().splitlines():
             print(line)
 

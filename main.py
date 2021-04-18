@@ -27,7 +27,16 @@ def main_menu():
     print_file('files/logo.txt')
     print_version_info()
 
-    print(f'\n{len(themes)} themes loaded.\nUnvoted themes: {unvoted_theme_count}\n')
+    print(f'\n{len(themes)} themes loaded.\nUnvoted themes: {max(0, unvoted_theme_count)}\n')
+
+    # TODO implement proper final round voting
+    if unvoted_theme_count < 0:
+        # disable voting selections
+        valid_selections.pop(0)
+        valid_selections.pop(0)  # pop 0 again since every index moves once during first pop
+
+        # print explanation
+        print('This script currently does not support final theme voting rounds.\n')
 
     # if an update is available, say so and enable option to open web browser
     if update_check_result == UpdateCheckResult.UPDATE_AVAILABLE:
@@ -103,7 +112,7 @@ def main_menu():
         print('Goodbye. Keep jamming!')
         exit(0)
 
-    # open update page in new tab (this is only accessible if an update is actually available)
+    # download and apply update (this is only accessible if an update is actually available)
     if selection == '4':
         download_update(new_update_version)
         exit(0)

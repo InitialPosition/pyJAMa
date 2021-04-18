@@ -13,7 +13,7 @@ def load_config():
         exit(0)
 
     # read yaml from config file
-    with open(CONFIG_FILE, 'r') as conf_file:
+    with open(CONFIG_FILE, 'r', encoding='utf8') as conf_file:
         data = yaml_load(conf_file, Loader=FullLoader)
 
     return data
@@ -31,7 +31,7 @@ def save_config(cookie1, cookie2):
     yaml_object.update({'SIDS': cookie2})
 
     # save cookies in config file
-    with open(CONFIG_FILE, 'w') as conf_file:
+    with open(CONFIG_FILE, 'w', encoding='utf8') as conf_file:
         yaml_dump(yaml_object, conf_file)
 
 
