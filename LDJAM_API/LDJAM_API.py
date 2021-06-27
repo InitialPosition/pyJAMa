@@ -11,11 +11,10 @@ def get_cookie_header():
     # load data from local config
     cookie_data = load_config()
 
-    cookie1 = cookie_data.get('__cfduid')
-    cookie2 = cookie_data.get('SIDS')
+    cookie1 = cookie_data.get('SIDS')
 
     # build header in correct format
-    header = {'Cookie': f'__cfduid={cookie1}; SIDS={cookie2}'}
+    header = {'Cookie': f'SIDS={cookie1}'}
 
     return header
 

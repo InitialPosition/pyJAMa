@@ -19,14 +19,14 @@ pyJAMa is a script that makes LDJAM theme voting less painful. It supports bulk 
 3. Create a virtual python environment by typing `python3 -m venv <target folder>` into your terminal and switch to it using `source <target folder>/bin/activate`. If creating the environment fails, you may need to install venv3 by typing `sudo apt install python3-venv` first.
 4. Install the required packages by running `python3 -m pip install -r requirements.txt` while the virtual environment is active.
 5. To launch the program, use the command `python3 main.py`.
-6. Enter your cookie data when the program asks you to. **The cookies will be saved locally and are NEVER sent anywhere except to the official LDJAM website.**
+6. Enter your cookie data when the program asks you to. **The cookie will be saved locally and is NEVER sent anywhere except to the official LDJAM website.**
 
 ### Cookie Data
-The program needs your session cookies from ldjam.com to communicate with the website API and to vote on themes. Your cookies can be found like this:
+The program needs your session cookie from ldjam.com to communicate with the website API and to vote on themes. Your cookie can be found like this:
 
-- FIREFOX: go to ldjam.com. Make sure you are logged in. Press F12 to open the developer console and switch to the "Storage" tab. Select the "Cookie" entry from the list on the left. Your cookies should be displayed here.
-- CHROME: go to ldjam.com, making sure you are logged in. Click on the padlock to the left of the URL, then click on "Cookies". You should now see your cookies under "ldjam.com".
-- OPERA: go to ldjam.com. Make sure you are logged in. Go to Settings > Privacy & security and click the ldjam cookies to see the content.
+- FIREFOX: go to ldjam.com. Make sure you are logged in. Press F12 to open the developer console and switch to the "Storage" tab. Select the "Cookie" entry from the list on the left. Your cookie should be displayed here.
+- CHROME: go to ldjam.com, making sure you are logged in. Click on the padlock to the left of the URL, then click on "Cookies". You should now see your cookie under "ldjam.com".
+- OPERA: go to ldjam.com. Make sure you are logged in. Go to Settings > Privacy & security and click the ldjam cookie to see the content.
 
 ## Roadmap
 - [ ] Load tokens automatically

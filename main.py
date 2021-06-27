@@ -131,15 +131,14 @@ def cookie_setup():
     print()
 
     # get cookie input
-    cookie_cfduid = input('__cfduid > ')
     cookie_sids = input('SIDS > ')
 
     # treat empty input as deletion request, otherwise save new data
-    if cookie_cfduid == '' and cookie_sids == '':
+    if cookie_sids == '':
         delete_config()
         exit(0)
     else:
-        save_config(cookie_cfduid, cookie_sids)
+        save_config(cookie_sids)
 
 
 # --- PROGRAM ENTRY POINT ---
@@ -171,8 +170,8 @@ else:
     # entered cookies. we delete the cookies and let the user enter them again.
     clear_console()
 
-    cprint('There was a problem fetching themes. This indicates there might be a problem with your tokens.', 'red')
-    cprint('The program will now terminate. It will ask you to re-enter your tokens on next startup.', 'red')
+    cprint('There was a problem fetching themes. This indicates there might be a problem with your token.', 'red')
+    cprint('The program will now terminate. It will ask you to re-enter your token on next startup.', 'red')
 
     print()
     print('DEBUG INFO:')

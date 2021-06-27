@@ -19,7 +19,7 @@ def load_config():
     return data
 
 
-def save_config(cookie1, cookie2):
+def save_config(cookie1):
     # delete old config
     delete_config()
 
@@ -27,8 +27,7 @@ def save_config(cookie1, cookie2):
     yaml_object = {}
 
     # write cookies to yaml dict
-    yaml_object.update({'__cfduid': cookie1})
-    yaml_object.update({'SIDS': cookie2})
+    yaml_object.update({'SIDS': cookie1})
 
     # save cookies in config file
     with open(CONFIG_FILE, 'w', encoding='utf8') as conf_file:
