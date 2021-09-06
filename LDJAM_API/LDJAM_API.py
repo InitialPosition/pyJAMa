@@ -62,7 +62,11 @@ def get_user_votes(event_id: int):
 
         return user_votes
     else:
-        print('ERROR! Could not fetch user votings. Aborting...')
+        if request_json['message'] == 'Event is not Slaughtering':
+            print('Theme slaughter has not begun yet! Please try again later.')
+            exit(0)
+
+        print('ERROR! Could not fetch user votes. Aborting...')
         exit(0)
 
 

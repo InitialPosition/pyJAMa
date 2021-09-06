@@ -8,6 +8,7 @@ from LDJAM_API.Voting import start_general_voting, VotingExitReason, start_bulk_
 from util.CONSTANTS import CONFIG_FILE
 from util.Config import load_config, save_config, delete_config
 from util.ConsoleFunctions import clear_console, print_file, print_version_info
+from util.CookieFetch import get_cookie_firefox
 from util.Updater import check_for_update, UpdateCheckResult, download_update
 
 
@@ -38,7 +39,7 @@ def main_menu():
         # print explanation
         print('This script currently does not support final theme voting rounds.\n')
 
-    # if an update is available, say so and enable option to open web browser
+    # if an update is available, say so and enable option to download update
     if update_check_result == UpdateCheckResult.UPDATE_AVAILABLE:
         cprint(f'NEW VERSION AVAILABLE: {new_update_version}\n'
                f'Changelog: https://github.com/InitialPosition/pyJAMa/releases/tag/v{new_update_version}\n', 'white',
@@ -119,6 +120,13 @@ def main_menu():
 
 
 def cookie_setup():
+    # try to load cookies automatically
+    cookie_fetch = get_cookie_firefox()
+    if cookie_fetch != -1:
+        print(f'Cookie retrieved: {cookie_fetch}')
+        save_config(cookie_fetch)
+        return
+
     clear_console()
 
     # print logo
@@ -171,7 +179,7 @@ else:
     clear_console()
 
     cprint('There was a problem fetching themes. This indicates there might be a problem with your token.', 'red')
-    cprint('The program will now terminate. It will ask you to re-enter your token on next startup.', 'red')
+    cprint('The program will now exit. You might want to log out and back in on LDJAM.com once.', 'red')
 
     print()
     print('DEBUG INFO:')

@@ -111,6 +111,8 @@ env.bak/
 venv.bak/
 venv2/
 
+pyJAMa-env/
+
 # Spyder project settings
 .spyderproject
 .spyproject
