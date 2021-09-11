@@ -1,10 +1,22 @@
 import configparser
 import platform
 import sqlite3
+import subprocess
 from getpass import getuser
 from os import path, getenv
 from os.path import isdir
+from platform import uname
 from sqlite3 import Error, OperationalError
+
+
+def in_wsl() -> bool:
+    """
+    WSL is thought to be the only common Linux kernel with Microsoft in the name, per Microsoft:
+
+    https://github.com/microsoft/WSL/issues/4071#issuecomment-496715404
+    """
+
+    return 'Microsoft' in uname().release
 
 
 def get_cookie_firefox():
@@ -12,12 +24,19 @@ def get_cookie_firefox():
 
     # get cookie database directory
     os = platform.system()
-    appdata_dir = ''
 
     if os == 'Windows':
         appdata_dir = path.join(getenv('APPDATA'), 'Mozilla/Firefox')
     elif os == 'Linux':
-        appdata_dir = path.join('/home/', getuser(), '.mozilla/firefox')
+        if in_wsl():  # we are in linux subsystem
+            print('Detected Windows Subsystem for Linux')
+            hack_path = subprocess.check_output("/mnt/c/Windows/System32/cmd.exe /C 'echo %APPDATA%'", shell=True)
+            # clean up path
+            hack_path = bytes.decode(hack_path)
+            hack_path = hack_path.rstrip().replace("\\", "/").replace("C:", "/mnt/c")
+            appdata_dir = path.join(hack_path, 'Mozilla/Firefox')
+        else:
+            appdata_dir = path.join('/home/', getuser(), '.mozilla/firefox')
     else:
         print('Could not establish OS! Aborting cookie retrieval...')
         return -1
@@ -39,7 +58,13 @@ def get_cookie_firefox():
 
         cursor.execute('SELECT value FROM moz_cookies WHERE host=".ldjam.com" AND name="SIDS"')
         result = cursor.fetchone()
-        token_raw = result[0]
+
+        try:
+            token_raw = result[0]
+
+        except TypeError:
+            print('No firefox token found.')
+            return -1
 
         return token_raw
 

@@ -2,7 +2,7 @@ from enum import Enum
 from os import remove
 from zipfile import ZipFile
 
-from requests import get
+from requests import get, ConnectionError
 
 from util.CONSTANTS import VERSION
 
@@ -18,11 +18,16 @@ def check_for_update():
     local_version = VERSION.split('.')
 
     # fetch newest version from website
-    version_request = get('https://raw.githubusercontent.com/InitialPosition/pyJAMa/main/util/CONSTANTS.py')
+    try:
+        version_request = get('https://raw.githubusercontent.com/InitialPosition/pyJAMa/main/util/CONSTANTS.py')
+
+    except ConnectionError:
+        print('Could not check for updates! Are you connected to the internet?')
+        return UpdateCheckResult.CHECK_ERROR, None
 
     # stop here if request wasn't successful
     if version_request.status_code != 200:
-        return UpdateCheckResult.CHECK_ERROR
+        return UpdateCheckResult.CHECK_ERROR, None
 
     version_line = None
     for line in version_request.text.splitlines():
@@ -32,7 +37,7 @@ def check_for_update():
 
     # if version line is still none, something went wrong
     if version_line is None:
-        return UpdateCheckResult.CHECK_ERROR
+        return UpdateCheckResult.CHECK_ERROR, None
 
     # extract newest version from version line
     online_version = version_line.split('\'')[1]

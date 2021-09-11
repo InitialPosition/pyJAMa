@@ -122,6 +122,7 @@ def main_menu():
 def cookie_setup():
     # try to load cookies automatically
     cookie_fetch = get_cookie_firefox()
+
     if cookie_fetch != -1:
         print(f'Cookie retrieved: {cookie_fetch}')
         save_config(cookie_fetch)
@@ -179,7 +180,11 @@ else:
     clear_console()
 
     cprint('There was a problem fetching themes. This indicates there might be a problem with your token.', 'red')
-    cprint('The program will now exit. You might want to log out and back in on LDJAM.com once.', 'red')
+    cprint('The program will now exit. If you have Firefox installed, make sure you are logged in on '
+           'https://ldjam.com/ .',
+           'red')
+    cprint('If you are, you might want to log out and back in once.',
+           'red')
 
     print()
     print('DEBUG INFO:')

@@ -1,3 +1,3 @@
 CONFIG_FILE = 'config.yml'
-VERSION = '1.4.0'
+VERSION = '1.4.1'
 AUTHOR = 'InitialPosition / RedCocoa'
