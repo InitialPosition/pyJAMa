@@ -155,6 +155,18 @@ def cookie_setup():
 print('Checking for updates...')
 update_check_result, new_update_version = check_for_update()
 
+if update_check_result == UpdateCheckResult.UPDATE_AVAILABLE:
+    clear_console()
+    print_file('files/logo.txt')
+    cprint(f'\nNEW VERSION AVAILABLE: {new_update_version}\n'
+           f'Changelog: https://github.com/InitialPosition/pyJAMa/releases/tag/v{new_update_version}\n', 'white',
+           'on_green')
+
+    update_now_selection = input('Update now? (Y: Yes, N: No) > ')
+    if update_now_selection.upper() == 'Y':
+        download_update(new_update_version)
+        exit()
+
 # if a config exists, load it
 if isfile(CONFIG_FILE):
     config_data = load_config()
