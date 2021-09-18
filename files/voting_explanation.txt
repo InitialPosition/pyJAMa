@@ -1,4 +1,4 @@
-Starting list voting.
+Starting list theme voting.
 
 The program will show you 10 themes. You have the ability to vote YES/NO for all of them at once.
 If you only want to vote for certain themes, include their index in the command. For example, 'Y 2 3 12' will vote YES for themes 2, 3 and 12.

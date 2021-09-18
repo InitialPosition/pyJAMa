@@ -2,6 +2,7 @@ import configparser
 import platform
 import sqlite3
 import subprocess
+from configparser import MissingSectionHeaderError
 from getpass import getuser
 from os import path, getenv
 from os.path import isdir
@@ -26,7 +27,7 @@ def get_cookie_firefox():
     os = platform.system()
 
     if os == 'Windows':
-        appdata_dir = path.join(getenv('APPDATA'), 'Mozilla/Firefox')
+        appdata_dir = path.join(getenv('APPDATA'), 'Mozilla/Firefox').rstrip().replace("\\", "/")
     elif os == 'Linux':
         if in_wsl():  # we are in linux subsystem
             print('Detected Windows Subsystem for Linux')
@@ -36,7 +37,7 @@ def get_cookie_firefox():
             hack_path = hack_path.rstrip().replace("\\", "/").replace("C:", "/mnt/c")
             appdata_dir = path.join(hack_path, 'Mozilla/Firefox')
         else:
-            appdata_dir = path.join('/home/', getuser(), '.mozilla/firefox')
+            appdata_dir = path.join('/home/', getuser(), '.mozilla/firefox').rstrip().replace("\\", "/")
     else:
         print('Could not establish OS! Aborting cookie retrieval...')
         return -1
@@ -45,11 +46,14 @@ def get_cookie_firefox():
         print('Firefox was not found on this system')
         return -1
 
-    config_path = path.join(appdata_dir, 'profiles.ini')
+    config_path = path.join(appdata_dir, 'profiles.ini').rstrip().replace("\\", "/")
 
-    config = configparser.ConfigParser()
-    config.read(config_path)
-    database_path = path.join(appdata_dir, config['Profile0']['Path'], 'cookies.sqlite')
+    try:
+        config = configparser.ConfigParser()
+        config.read(config_path)
+        database_path = path.join(appdata_dir, config['Profile0']['Path'], 'cookies.sqlite')
+    except MissingSectionHeaderError:
+        return -1
 
     # connect to cookie database and read cookie
     try:

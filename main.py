@@ -47,8 +47,8 @@ def main_menu():
         valid_selections.append('4')
 
     # print default main menu
-    print('[1] Start theme voting')
-    print('[2] Start bulk theme voting')
+    print('[1] Start list theme voting')
+    print('[2] Start keyword theme voting')
     print('[3] Exit')
 
     if update_check_result == UpdateCheckResult.UPDATE_AVAILABLE:
