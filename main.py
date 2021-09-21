@@ -13,110 +13,103 @@ from util.Updater import check_for_update, UpdateCheckResult, download_update
 
 
 def main_menu():
-    # update user votes and counts on return to main menu
-    print('Fetching user votes...')
-    user_votes = get_user_votes(event_id)
+    while True:
+        # update user votes and counts on return to main menu
+        print('Fetching user votes...')
+        user_votes = get_user_votes(event_id)
 
-    unvoted_theme_count = len(themes) - len(user_votes)
+        unvoted_theme_count = len(themes) - len(user_votes)
 
-    # default valid selections
-    valid_selections = ['1', '2', '3']
+        # default valid selections
+        valid_selections = ['1', '2', '3']
 
-    clear_console()
+        clear_console()
 
-    # print logo and info
-    print_file('files/logo.txt')
-    print_version_info()
+        # print logo and info
+        print_file('files/logo.txt')
+        print_version_info()
 
-    print(f'\n{len(themes)} themes loaded.\nUnvoted themes: {max(0, unvoted_theme_count)}\n')
+        print(f'\n{len(themes)} themes loaded.\nUnvoted themes: {max(0, unvoted_theme_count)}\n')
 
-    # TODO implement proper final round voting
-    if unvoted_theme_count < 0:
-        # disable voting selections
-        valid_selections.pop(0)
-        valid_selections.pop(0)  # pop 0 again since every index moves once during first pop
+        # TODO implement proper final round voting
+        if unvoted_theme_count < 0:
+            # disable voting selections
+            valid_selections.pop(0)
+            valid_selections.pop(0)  # pop 0 again since every index moves once during first pop
 
-        # print explanation
-        print('This script currently does not support final theme voting rounds.\n')
+            # print explanation
+            print('This script currently does not support final theme voting rounds.\n')
 
-    # if an update is available, say so and enable option to download update
-    if update_check_result == UpdateCheckResult.UPDATE_AVAILABLE:
-        cprint(f'NEW VERSION AVAILABLE: {new_update_version}\n'
-               f'Changelog: https://github.com/InitialPosition/pyJAMa/releases/tag/v{new_update_version}\n', 'white',
-               'on_green')
-        valid_selections.append('4')
+        # if an update is available, say so and enable option to download update
+        if update_check_result == UpdateCheckResult.UPDATE_AVAILABLE:
+            cprint(f'NEW VERSION AVAILABLE: {new_update_version}\n'
+                   f'Changelog: https://github.com/InitialPosition/pyJAMa/releases/tag/v{new_update_version}\n', 'white',
+                   'on_green')
+            valid_selections.append('4')
 
-    # print default main menu
-    print('[1] Start list theme voting')
-    print('[2] Start keyword theme voting')
-    print('[3] Exit')
+        # print default main menu
+        print('[1] Start list theme voting')
+        print('[2] Start keyword theme voting')
+        print('[3] Exit')
 
-    if update_check_result == UpdateCheckResult.UPDATE_AVAILABLE:
-        print('[4] Download Update')
+        if update_check_result == UpdateCheckResult.UPDATE_AVAILABLE:
+            print('[4] Download Update')
 
-    print()
+        print()
 
-    # get user selection
-    selection = input('Selection > ')
-
-    # make sure selection is valid
-    while selection not in valid_selections:
-        print('Invalid selection. Try again.')
+        # get user selection
         selection = input('Selection > ')
 
-    # start normal voting mode
-    if selection == '1':
-        voting_result = start_general_voting(themes, user_votes)
+        # make sure selection is valid
+        while selection not in valid_selections:
+            print('Invalid selection. Try again.')
+            selection = input('Selection > ')
 
-        # reopen main menu if user typed c or no themes are left
-        if voting_result == VotingExitReason.USER_ABORTED or voting_result == VotingExitReason.NO_MORE_THEMES:
-            main_menu()
+        # start normal voting mode
+        if selection == '1':
+            voting_result = start_general_voting(themes, user_votes)
 
-        # handle error
-        if voting_result == VotingExitReason.GENERAL_ERROR:
-            # voting failed for some reason. abort and tell the user
-            clear_console()
+            # handle error
+            if voting_result == VotingExitReason.GENERAL_ERROR:
+                # voting failed for some reason. abort and tell the user
+                clear_console()
 
-            cprint('An error occurred during the voting process. This probably means the API is overloaded or you lost '
-                   'internet connection.',
-                   'red')
-            cprint('The program will now terminate. Check your internet connection and try again. If voting still fails'
-                   ', wait a few minutes and try again.', 'red')
+                cprint('An error occurred during the voting process. This probably means the API is overloaded or you lost '
+                       'internet connection.',
+                       'red')
+                cprint('The program will now terminate. Check your internet connection and try again. If voting still fails'
+                       ', wait a few minutes and try again.', 'red')
 
+                exit(0)
+
+        # start bulk voting mode
+        if selection == '2':
+            voting_result = start_bulk_voting(themes, user_votes)
+
+            # handle error
+            if voting_result == VotingExitReason.GENERAL_ERROR:
+                # voting failed for some reason. abort and tell the user
+                clear_console()
+
+                cprint(
+                    'An error occurred during the voting process. This probably means the API is overloaded or you lost '
+                    'internet connection.',
+                    'red')
+                cprint(
+                    'The program will now terminate. Check your internet connection and try again. If voting still fails'
+                    ', wait a few minutes and try again.', 'red')
+
+                exit(0)
+
+        # exit program
+        if selection == '3':
+            print('Goodbye. Keep jamming!')
             exit(0)
 
-    # start bulk voting mode
-    if selection == '2':
-        voting_result = start_bulk_voting(themes, user_votes)
-
-        # reopen main menu if user typed c or no themes are left
-        if voting_result == VotingExitReason.USER_ABORTED or voting_result == VotingExitReason.NO_MORE_THEMES:
-            main_menu()
-
-        # handle error
-        if voting_result == VotingExitReason.GENERAL_ERROR:
-            # voting failed for some reason. abort and tell the user
-            clear_console()
-
-            cprint(
-                'An error occurred during the voting process. This probably means the API is overloaded or you lost '
-                'internet connection.',
-                'red')
-            cprint(
-                'The program will now terminate. Check your internet connection and try again. If voting still fails'
-                ', wait a few minutes and try again.', 'red')
-
+        # download and apply update (this is only accessible if an update is actually available)
+        if selection == '4':
+            download_update(new_update_version)
             exit(0)
-
-    # exit program
-    if selection == '3':
-        print('Goodbye. Keep jamming!')
-        exit(0)
-
-    # download and apply update (this is only accessible if an update is actually available)
-    if selection == '4':
-        download_update(new_update_version)
-        exit(0)
 
 
 def cookie_setup():
