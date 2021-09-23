@@ -1,4 +1,5 @@
 import json
+from os import remove
 from os.path import isfile
 
 from termcolor import cprint
@@ -43,7 +44,8 @@ def main_menu():
         # if an update is available, say so and enable option to download update
         if update_check_result == UpdateCheckResult.UPDATE_AVAILABLE:
             cprint(f'NEW VERSION AVAILABLE: {new_update_version}\n'
-                   f'Changelog: https://github.com/InitialPosition/pyJAMa/releases/tag/v{new_update_version}\n', 'white',
+                   f'Changelog: https://github.com/InitialPosition/pyJAMa/releases/tag/v{new_update_version}\n',
+                   'white',
                    'on_green')
             valid_selections.append('4')
 
@@ -74,11 +76,13 @@ def main_menu():
                 # voting failed for some reason. abort and tell the user
                 clear_console()
 
-                cprint('An error occurred during the voting process. This probably means the API is overloaded or you lost '
-                       'internet connection.',
-                       'red')
-                cprint('The program will now terminate. Check your internet connection and try again. If voting still fails'
-                       ', wait a few minutes and try again.', 'red')
+                cprint(
+                    'An error occurred during the voting process. This probably means the API is overloaded or you lost '
+                    'internet connection.',
+                    'red')
+                cprint(
+                    'The program will now terminate. Check your internet connection and try again. If voting still fails'
+                    ', wait a few minutes and try again.', 'red')
 
                 exit(0)
 
@@ -119,6 +123,7 @@ def cookie_setup():
     if cookie_fetch != -1:
         print(f'Cookie retrieved: {cookie_fetch}')
         save_config(cookie_fetch)
+
         return
 
     clear_console()
@@ -177,8 +182,38 @@ themes = None
 jsonified_themes = json.loads(request.text)
 
 if jsonified_themes['status'] == 200:
+    if isfile('cookie_fail'):
+        remove('cookie_fail')
+
     themes = jsonified_themes["ideas"]
 else:
+
+    if isfile('cookie_fail'):
+        remove('cookie_fail')
+
+        clear_console()
+
+        # print logo
+        print_file('files/logo.txt')
+        print_version_info()
+        print()
+
+        # explain why cookies are necessary
+        print_file('files/cookie_explanation.txt')
+        print()
+
+        # get cookie input
+        cookie_sids = input('SIDS > ')
+
+        # treat empty input as deletion request, otherwise save new data
+        if cookie_sids == '':
+            delete_config()
+            exit(0)
+        else:
+            save_config(cookie_sids)
+
+        print('\nCookie saved. Please restart the program.')
+        exit(0)
 
     # if we land here, the API was not happy with our theme request, meaning something is most likely wrong with the
     # entered cookies. we delete the cookies and let the user enter them again.
@@ -190,6 +225,8 @@ else:
            'red')
     cprint('If you are, you might want to log out and back in once.',
            'red')
+    cprint('If cookie fetching isn\'t successful next time, you will be required to enter your token manually.',
+           'red')
 
     print()
     print('DEBUG INFO:')
@@ -197,6 +234,9 @@ else:
     print()
 
     delete_config()
+    with open('cookie_fail', 'w') as f:
+        f.write('If this file exists, a saved cookie was no longer valid for the API. If a new cookie can\'t be '
+                'fetched next time the program runs, it will ask you for manual cookie entry.\n')
 
     exit(0)
 
