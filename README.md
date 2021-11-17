@@ -32,3 +32,7 @@ The program needs your session cookie from ldjam.com to communicate with the web
 - [ ] Load tokens automatically
 
 Entering tokens manually is not the most elegant solution. There might be a way to detect the browser used on the machine and to extract the cookies automatically.
+
+- [ ] GUI
+
+A GUI would be nice to have to make the program more accessable to people who don't like using the command line or that don't want to deal with pip requirements.
