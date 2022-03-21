@@ -11,6 +11,29 @@ class VotingExitReason(Enum):
     NO_MORE_THEMES = 2
 
 
+def get_tokens_to_process(vote_string: set[str]):
+    tokens_to_process = set[int]()
+    # Enumerate each token in the votes string
+    for i, token in enumerate(vote_string):
+        # If the token is numeric...
+        if token.isnumeric():
+            # Convert the token to an int
+            token_numeric = int(token)
+            # Make sure the token is in range.
+            # If it's not then check the next token, if it is then add it to the list
+            if token_numeric > 10 or token_numeric < 1:
+                print(f"{0} is not a valid value", token_numeric)
+                continue
+
+            tokens_to_process.add(token_numeric)
+        # If the token isn't numeric then we're done here
+        else:
+            break
+
+    # Return the list of tokens
+    return tokens_to_process
+
+
 def start_general_voting(themes: dict, voted_themes: dict):
     # array for themes we voted on while in the function
     local_voted_themes = []
@@ -64,108 +87,77 @@ def start_general_voting(themes: dict, voted_themes: dict):
 
         # get user input
         user_input = input('What do you want to do? [Y/N/F/C] > ')
+        vote_string = user_input.upper().split(' ')
 
-        # make sure input is valid
-        if (user_input.upper().startswith('Y') or user_input.upper().startswith('N') or user_input.upper().startswith(
-                'C') or user_input.upper().startswith('F')) is False:
-            continue
+        # Keep track of all the tokens we've processed so far
+        tokens_processed_so_far = set[int]()
 
-        # cancel if user typed c
-        if user_input.upper() == 'C':
-            return VotingExitReason.USER_ABORTED
+        while len(vote_string) > 0:
+            # If the token is a Y, N or an F, get the appropriate tokens
+            if vote_string[0] in ['Y', 'N', 'F']:
+                # Set the vote action accordingly
+                vote_action = {'Y': 'yes', 'N': 'no', 'F': 'flag'}.get(vote_string[0])
 
-        # we are voting yes
-        elif user_input.upper().startswith('Y'):
+                # Start a list of all the themes that we want to process
+                tokens_to_process = set[int]()
 
-            input_split = user_input.upper().split(' ')
+                # If this token is the last one in the string, vote for all of them
+                if len(vote_string) == 1:
+                    tokens_to_process = [i for i in set(range(1, 11)) if i not in tokens_processed_so_far]
+                else:
+                    tokens_to_process = get_tokens_to_process(vote_string[1:])
 
-            theme_index = 0
+                # Make sure that flagging isn't being abused
+                if vote_action == 'flag' and len(tokens_to_process) > 1 or len(tokens_to_process) == 0:
+                    print("Flagging themes requires exactly one theme to be listed")
+                    # See if the user has entered anything that's otherwise valid
+                    vote_string = vote_string[len(tokens_to_process) + 1:]
 
-            for theme in display_themes:
+                else:
+                    # Vote for each token
+                    for token in tokens_to_process:
+                        # Convert the token into the actual theme ID
+                        theme_id = display_themes[token - 1]
 
-                theme_index += 1
+                        # Skip voting again if we've already voted for this item
+                        if token in tokens_processed_so_far:
+                            print(f"{themes.get(theme_id)} has already been voted for.  Skipping")
+                            continue
 
-                # if no numbers provided, yes vote all themes. otherwise, vote yes if index is in input list.
-                if (len(input_split) > 1 and str(theme_index) in input_split[1:]) or len(input_split) == 1:
-                    print(f'Voting YES on theme "{themes.get(theme)}"')
-                    vote_result = vote_theme(theme, 'yes')
+                        # Vote for the theme
+                        print(f'Voting {vote_action.upper()} on theme "{themes.get(theme_id)}"')
+                        vote_result = vote_theme(theme_id, vote_action)
 
-                    if vote_result != 0:
-                        # there was an error posting vote
-                        return VotingExitReason.GENERAL_ERROR
+                        # Check that the vote was successful
+                        if vote_result != 0:
+                            return VotingExitReason.GENERAL_ERROR
 
-                    # add theme to local voted array so it gets removed on successive searches
-                    local_voted_themes.append(theme)
+                        # add theme to local voted array so it gets removed on successive searches
+                        local_voted_themes.append(theme_id)
 
-                    # update unvoted counter
-                    unvoted_themes -= 1
+                        # Add the token to the list of tokens we've already processed
+                        tokens_processed_so_far.add(token)
 
-                    # sleep for 1 second to give the API some breathing room
-                    sleep(1)
+                        # update unvoted counter
+                        unvoted_themes -= 1
 
-                    if unvoted_themes == 0:
-                        return VotingExitReason.NO_MORE_THEMES
+                        # sleep for 1 second to give the API some breathing room
+                        sleep(1)
 
-        # same as yes but actually no
-        elif user_input.upper().startswith('N'):
-            input_split = user_input.upper().split(' ')
+                        # Remove the tokens we've just processed from the voting string
+                        vote_string = vote_string[len(tokens_to_process) + 1:]
 
-            theme_index = 0
+                if unvoted_themes == 0:
+                    return VotingExitReason.NO_MORE_THEMES
 
-            for theme in display_themes:
+            # The user is opting to go back to the main menu
+            elif vote_string[0] == 'C':
+                return VotingExitReason.USER_ABORTED
+                pass
 
-                theme_index += 1
-
-                if (len(input_split) > 1 and str(theme_index) in input_split[1:]) or len(input_split) == 1:
-                    print(f'Voting NO on theme "{themes.get(theme)}"')
-                    vote_result = vote_theme(theme, 'no')
-
-                    if vote_result != 0:
-                        # there was an error posting vote
-                        return VotingExitReason.GENERAL_ERROR
-
-                    local_voted_themes.append(theme)
-
-                    # update unvoted counter
-                    unvoted_themes -= 1
-
-                    sleep(1)
-
-                    if unvoted_themes == 0:
-                        return VotingExitReason.NO_MORE_THEMES
-
-        elif user_input.upper().startswith('F'):
-            # flag a theme. this only works if an index was given.
-            input_split = user_input.upper().split(' ')
-
-            # to be precise, if EXACTLY ONE index was given.
-            if len(input_split) != 2:
-                continue
-
-            theme_index = 0
-
-            for theme in display_themes:
-                # find the theme to flag
-                theme_index += 1
-
-                if str(theme_index) in input_split[1:]:
-
-                    print(f'FLAGGING theme "{themes.get(theme)}"')
-                    vote_result = vote_theme(theme, 'flag')
-
-                    if vote_result != 0:
-                        # there was an error posting vote
-                        return VotingExitReason.GENERAL_ERROR
-
-                    local_voted_themes.append(theme)
-
-                    # update unvoted counter
-                    unvoted_themes -= 1
-
-                    sleep(1)
-
-                    if unvoted_themes == 0:
-                        return VotingExitReason.NO_MORE_THEMES
+            # The user has entered an invalid value
+            else:
+                print(f"Action {vote_string[0].upper()} is not recognised")
 
 
 def start_bulk_voting(themes: dict, voted_themes: dict):
