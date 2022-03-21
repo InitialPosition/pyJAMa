@@ -13,8 +13,8 @@ class VotingExitReason(Enum):
     NO_MORE_THEMES = 2
 
 
-def get_tokens_to_process(vote_string: Set[str]):
-    tokens_to_process = Set[int]()
+def get_tokens_to_process(vote_string: Set[str]) -> Set[int]:
+    tokens_to_process: Set[int] = set()
     # Enumerate each token in the votes string
     for i, token in enumerate(vote_string):
         # If the token is numeric...
@@ -92,7 +92,7 @@ def start_general_voting(themes: dict, voted_themes: dict):
         vote_string = user_input.upper().split(' ')
 
         # Keep track of all the tokens we've processed so far
-        tokens_processed_so_far = Set[int]()
+        tokens_processed_so_far: Set[int] = set()
 
         while len(vote_string) > 0:
             # If the token is a Y, N or an F, get the appropriate tokens
@@ -101,7 +101,7 @@ def start_general_voting(themes: dict, voted_themes: dict):
                 vote_action = {'Y': 'yes', 'N': 'no', 'F': 'flag'}.get(vote_string[0])
 
                 # Start a list of all the themes that we want to process
-                tokens_to_process = Set[int]()
+                tokens_to_process: Set[int] = set()
 
                 # If this token is the last one in the string, vote for all of them
                 if len(vote_string) == 1:
