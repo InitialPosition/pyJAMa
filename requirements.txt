@@ -2,3 +2,8 @@ requests
 pyyaml
 termcolor
 urllib3
+pip
+certifi
+idna
+setuptools
+PySide2

@@ -1,4 +1,4 @@
 Welcome to pyJAMa! To use this program, it needs your LDJAM login token to vote on behalf of your LDJAM account.
 The token will NEVER be sent anywhere except to the official LDJAM API.
 
-If you don't know how to find your token, click here: https://github.com/InitialPosition/pyJAMa#cookie-data
+If you don't know how to find your token, go to https://github.com/InitialPosition/pyJAMa#cookie-data

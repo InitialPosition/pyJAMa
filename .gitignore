@@ -139,3 +139,7 @@ config.yml
 
 # packaged releases
 *.zip
+
+venv3/
+build/
+dist/
