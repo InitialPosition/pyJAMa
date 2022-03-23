@@ -1,9 +1,8 @@
 import json
 import sys
-from threading import Thread
-from time import sleep
+import time
 
-from PySide2 import QtGui
+from PySide2 import QtCore
 from PySide2.QtCore import Qt
 from PySide2.QtGui import QPalette
 from PySide2.QtWidgets import QMainWindow, QApplication, QAbstractItemView
@@ -38,8 +37,9 @@ class VotingWindow(QMainWindow):
 
 		self.ui.text_theme_search.textChanged.connect(self.search_term_changed)
 
-		self.ui.btn_vote_yes.clicked.connect(lambda: self.start_vote_thread("yes"))
-		self.ui.btn_vote_no.clicked.connect(lambda: self.start_vote_thread("no"))
+		self.ui.btn_vote_yes.clicked.connect(lambda: self.vote_selected_themes("yes"))
+		self.ui.btn_vote_no.clicked.connect(lambda: self.vote_selected_themes("no"))
+		self.ui.btn_flag.clicked.connect(lambda: self.vote_selected_themes("flag"))
 
 		self.ui.btn_vote_yes.setEnabled(False)
 		self.ui.btn_vote_no.setEnabled(False)
@@ -66,6 +66,8 @@ class VotingWindow(QMainWindow):
 				'ideas'].get(theme).upper():
 				current_theme = self.theme_library['ideas'].get(theme)
 				self.ui.list_themes.addItem(current_theme)
+
+		self.ui.list_themes.sortItems()
 
 		if len(self.ui.text_theme_search.text()) > 0:
 			self.ui.label_status.setText(
@@ -98,53 +100,39 @@ class VotingWindow(QMainWindow):
 
 		return -1
 
-	def vote_theme(self, themes: list, voting: str) -> None:
-		for theme in themes:
-			theme_id = self.get_theme_id(theme.text())
-			print(
-				f"Vote: {voting}, Theme ID: {theme_id} (To be clear, that is '{self.theme_library['ideas'].get(theme_id)}')")
-			voting_success = LDJAM_API.vote_theme(theme_id, voting)
+	def vote_theme(self, theme: str, voting: str) -> None:
+		theme_id = self.get_theme_id(theme)
+		print(
+			f"Vote: {voting}, Theme ID: {theme_id} (To be clear, that is '{self.theme_library['ideas'].get(theme_id)}')")
+		voting_success = LDJAM_API.vote_theme(theme_id, voting)
 
-			if voting_success != 0:
-				print("Error voting")
+		if voting_success != 0:
+			print("Error voting")
 
-			sleep(1)
-
-	def vote_yes(self):
+	def vote_selected_themes(self, voting: str):
 		self.ui.btn_vote_yes.setEnabled(False)
 		self.ui.btn_vote_no.setEnabled(False)
 		self.ui.btn_flag.setEnabled(False)
 
+		self.ui.list_themes.setEnabled(False)
+
+		counter = 0
+		theme_count = len(self.ui.list_themes.selectedItems())
 		for theme in self.ui.list_themes.selectedItems():
-			print(f"Voting yes on '{theme.text()}'")
-			self.vote_theme(theme.text(), "yes")
+			self.vote_theme(theme.text(), voting)
+
+			counter += 1
+			theme.setText(f"{theme.text()}    ({'Voted ' + voting.upper() if voting != 'flag' else 'FLAGGED'})")
+			self.ui.label_status.setText(
+				f"Voting... {round((counter / theme_count) * 100)}% done ({counter} / {theme_count})")
+			QtCore.QCoreApplication.processEvents()
+
+			time.sleep(1)
 
 		self.ui.text_theme_search.clear()
 		self.refresh_theme_list()
 
-		self.ui.btn_vote_yes.setEnabled(True)
-		self.ui.btn_vote_no.setEnabled(True)
-		self.ui.btn_flag.setEnabled(True)
-
-	def start_vote_thread(self, voting: str):
-		voting_thread = Thread(target=self.vote_theme, args=(self.ui.list_themes.selectedItems(), voting,), daemon=True)
-
-		voting_thread.start()
-
-		self.ui.btn_vote_yes.setEnabled(False)
-		self.ui.btn_vote_no.setEnabled(False)
-		self.ui.btn_flag.setEnabled(False)
-
-		selected_amount = len(self.ui.list_themes.selectedItems())
-		self.ui.label_status.setText(
-			f"Applying votes. The app will appear frozen for {selected_amount} "
-			f"{'seconds' if selected_amount != 1 else 'second'}.")
-
-		QtGui.QGuiApplication.processEvents()
-		voting_thread.join()
-
-		self.ui.text_theme_search.clear()
-		self.refresh_theme_list()
+		self.ui.list_themes.setEnabled(True)
 
 	def refresh_theme_list(self):
 		request = LDJAM_API.get_event_themes(self.event_id)
