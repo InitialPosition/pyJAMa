@@ -115,6 +115,7 @@ class VotingWindow(QMainWindow):
 		self.ui.btn_flag.setEnabled(False)
 
 		self.ui.list_themes.setEnabled(False)
+		self.ui.text_theme_search.setEnabled(False)
 
 		counter = 0
 		theme_count = len(self.ui.list_themes.selectedItems())
@@ -133,6 +134,8 @@ class VotingWindow(QMainWindow):
 		self.refresh_theme_list()
 
 		self.ui.list_themes.setEnabled(True)
+		self.ui.text_theme_search.setEnabled(True)
+		self.ui.text_theme_search.clear()
 
 	def refresh_theme_list(self):
 		request = LDJAM_API.get_event_themes(self.event_id)
