@@ -8,6 +8,7 @@ from os import path, getenv
 from os.path import isdir
 from platform import uname
 from sqlite3 import Error, OperationalError
+from sys import exit
 
 
 def in_wsl() -> bool:

@@ -1,6 +1,7 @@
 import json
 from os import remove
 from os.path import isfile
+from sys import exit
 
 from termcolor import cprint
 
@@ -84,7 +85,7 @@ def main_menu():
                     'The program will now terminate. Check your internet connection and try again. If voting still fails'
                     ', wait a few minutes and try again.', 'red')
 
-                exit(0)
+                exit()
 
         # start bulk voting mode
         if selection == '2':
@@ -103,17 +104,17 @@ def main_menu():
                     'The program will now terminate. Check your internet connection and try again. If voting still fails'
                     ', wait a few minutes and try again.', 'red')
 
-                exit(0)
+                exit()
 
         # exit program
         if selection == '3':
             print('Goodbye. Keep jamming!')
-            exit(0)
+            exit()
 
         # download and apply update (this is only accessible if an update is actually available)
         if selection == '4':
             download_update(new_update_version)
-            exit(0)
+            exit()
 
 
 def cookie_setup():
@@ -143,7 +144,7 @@ def cookie_setup():
     # treat empty input as deletion request, otherwise save new data
     if cookie_sids == '':
         delete_config()
-        exit(0)
+        exit()
     else:
         save_config(cookie_sids)
 
@@ -208,12 +209,12 @@ else:
         # treat empty input as deletion request, otherwise save new data
         if cookie_sids == '':
             delete_config()
-            exit(0)
+            exit()
         else:
             save_config(cookie_sids)
 
         print('\nCookie saved. Please restart the program.')
-        exit(0)
+        exit()
 
     # if we land here, the API was not happy with our theme request, meaning something is most likely wrong with the
     # entered cookies. we delete the cookies and let the user enter them again.
@@ -238,7 +239,7 @@ else:
         f.write('If this file exists, a saved cookie was no longer valid for the API. If a new cookie can\'t be '
                 'fetched next time the program runs, it will ask you for manual cookie entry.\n')
 
-    exit(0)
+    exit()
 
 # prep work done, show main menu
 main_menu()
