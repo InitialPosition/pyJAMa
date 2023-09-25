@@ -1,4 +1,5 @@
 import json
+import os
 import sys
 import time
 
@@ -164,7 +165,7 @@ if Config.has_config():
 	voting_window.refresh_theme_list()
 	voting_window.show()
 else:
-	cookie_window = ConfigCreator()
+	cookie_window = ConfigCreator(os.path.dirname(os.path.realpath(__file__)))
 	cookie_window.set_main_window(voting_window)
 
 	cookie_window.show()

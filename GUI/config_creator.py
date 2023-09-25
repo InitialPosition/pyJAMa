@@ -12,7 +12,7 @@ from util import Config
 class ConfigCreator(QWidget):
 	main_window = None
 
-	def __init__(self):
+	def __init__(self, root_path):
 		super().__init__()
 
 		self.ui = Ui_ConfigCreator()
@@ -23,7 +23,7 @@ class ConfigCreator(QWidget):
 		self.setWindowTitle("Enter your Token")
 
 		cookie_explanation = ""
-		with open(os.path.join(os.path.realpath(__file__), "../../files/cookie_explanation.txt"), 'r', encoding='utf8') as f:
+		with open(os.path.join(root_path, "files/cookie_explanation.txt"), 'r', encoding='utf8') as f:
 			for line in f.read().splitlines():
 				cookie_explanation += line + "\n"
 
