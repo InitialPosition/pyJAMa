@@ -3,10 +3,10 @@ import os
 import sys
 import time
 
-from PySide2 import QtCore
-from PySide2.QtCore import Qt
-from PySide2.QtGui import QPalette
-from PySide2.QtWidgets import QMainWindow, QApplication, QAbstractItemView
+from PySide6 import QtCore
+from PySide6.QtCore import Qt
+from PySide6.QtGui import QPalette
+from PySide6.QtWidgets import QMainWindow, QApplication, QAbstractItemView
 
 from GUI import Styling
 from GUI.config_creator import ConfigCreator

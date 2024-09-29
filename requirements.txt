@@ -6,4 +6,4 @@ pip
 certifi
 idna
 setuptools
-PySide2
+pyside6

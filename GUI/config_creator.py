@@ -1,8 +1,8 @@
 import os
 
-from PySide2.QtCore import Qt
-from PySide2.QtGui import QPalette
-from PySide2.QtWidgets import QWidget, QMainWindow
+from PySide6.QtCore import Qt
+from PySide6.QtGui import QPalette
+from PySide6.QtWidgets import QWidget, QMainWindow
 
 from GUI import Styling
 from GUI.ui_config_create import Ui_ConfigCreator
